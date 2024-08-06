@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-
+import com.vanniktech.maven.publish.SonatypeHost
 plugins {
 
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrainsCompose)
     kotlin("plugin.serialization") version "1.9.23"
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 kotlin {
@@ -66,4 +67,52 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = "io.github.ericnjeim",
+        artifactId = "lib-news",
+        version = "1.0.0"
+    )
+
+    // Configure POM metadata for the published artifact
+    pom {
+        name.set("Kmp Lib 1")
+        description.set("Library used to open entities on both Android/iOS.")
+        inceptionYear.set("2024")
+        url.set("https://github.com/EricNjeim/newsapplibrary")
+
+        licenses {
+            license {
+                name.set("MIT")
+                url.set("https://opensource.org/licenses/MIT")
+            }
+        }
+
+        // Specify developers information
+        developers {
+            developer {
+                id.set("ericnjeim")
+                name.set("Eric Njeim")
+                email.set("eric.njeim@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:git://github.com/EricNjeim/newsapplibrary.git")
+            developerConnection.set("scm:git:ssh://github.com/EricNjeim/newsapplibrary.git")
+            url.set("https://github.com/EricNjeim/newsapplibrary")
+        }
+    }
+
+    // Configure publishing to Maven Central
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    // Enable GPG signing for all publications
+    signAllPublications()
+}
+
+// Ensure all necessary publications are created
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
